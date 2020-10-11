@@ -1,0 +1,65 @@
+name: V2_BuildAndDeploy_AspNetCoreApp_ToAzureWebApp
+
+on:
+  repository_dispatch:
+  push:
+    paths:
+      - sampleApps/dotNetCore/NetCoreApp31.MvcApp/**
+      - '!.github/workflows/**'
+      - '.github/workflows/v2.deployDotNetCoreAppToAzureWebApp.yml'
+    branches:
+      - master
+      - actions/**
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout microsoft/oryx repo
+      uses: actions/checkout@master
+      with:
+        repository: microsoft/oryx
+
+    - name: Setup .NET Core SDK version 3.1.x
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.x'
+
+    - name: Publish AutoUpdater tool and set environment variables
+      uses: actions/github-script@v3
+      with:
+        script: |
+          set -ex
+          echo "Building AutoUpdater tool..."
+          echo
+          outputPath="/tmp/autoupdater"
+          dotnet publish build/tools/AutoUpdater/AutoUpdater.csproj \
+          -c Release \
+          -r linux-x64 \
+          -o "$outputPath"
+          
+          echo
+          echo "Cloning forked Oryx repo..."
+          echo
+          forkAccountName="kiranongithub"
+          repoDir="/tmp/oryx"
+          rm -rf $repoDir
+          git clone https://github.com/$forkAccountName/oryx.git $repoDir
+          cd $repoDir
+          git config --global user.email \"${forkAccountName}@gmail.com\"
+          git config --global user.name \"$forkAccountName\"
+
+          echo
+          echo "Keeping the forked Oryx repo up-to-date with upstream Oryx repo..."
+          echo
+          git remote add upstream https://github.com/microsoft/oryx.git
+          git fetch upstream
+          git reset --hard upstream/master
+          git push -uf origin master
+
+          echo
+          echo "Getting buildpack-deps:stretch image's digest..."
+          buildpackDepsStretchSha=$(docker images --no-trunc --quiet buildpack-deps:stretch)
+          buildpackDepsStretchSha=${buildpackDepsStretchSha#"sha256:"}
+
+          AutoUpdater digest "$repoDir" $buildpackDepsStretchSha
+          
