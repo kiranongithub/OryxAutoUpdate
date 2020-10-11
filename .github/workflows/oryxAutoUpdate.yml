@@ -10,9 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout microsoft/oryx repo
-      uses: actions/checkout@kichalla/update.autoupdater
+      uses: actions/checkout@v2
       with:
         repository: microsoft/oryx
+        ref: kichalla/update.autoupdater
 
     - name: Setup .NET Core SDK version 3.1.x
       uses: actions/setup-dotnet@v1
