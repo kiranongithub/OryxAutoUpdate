@@ -1,15 +1,10 @@
-name: V2_BuildAndDeploy_AspNetCoreApp_ToAzureWebApp
+name: OryxAutoUpdate
 
 on:
   repository_dispatch:
   push:
-    paths:
-      - sampleApps/dotNetCore/NetCoreApp31.MvcApp/**
-      - '!.github/workflows/**'
-      - '.github/workflows/v2.deployDotNetCoreAppToAzureWebApp.yml'
     branches:
-      - master
-      - actions/**
+      - main
 jobs:
   build:
     runs-on: ubuntu-latest
