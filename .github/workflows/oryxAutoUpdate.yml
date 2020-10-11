@@ -24,40 +24,40 @@ jobs:
       uses: actions/github-script@v3
       with:
         script: |
-          set -ex
-          echo "Building AutoUpdater tool..."
-          echo
-          outputPath="/tmp/autoupdater"
-          dotnet publish build/tools/AutoUpdater/AutoUpdater.csproj \
-          -c Release \
-          -r linux-x64 \
-          -o "$outputPath"
-          
-          echo
-          echo "Cloning forked Oryx repo..."
-          echo
-          export FORK_ACCOUNT_NAME="kiranongithub"
-          repoDir="/tmp/oryx"
-          rm -rf $repoDir
-          git clone https://github.com/$FORK_ACCOUNT_NAME/oryx.git $repoDir
-          cd $repoDir
-          git config --global user.email \"${FORK_ACCOUNT_NAME}@gmail.com\"
-          git config --global user.name \"$FORK_ACCOUNT_NAME\"
+            set -ex
+            echo "Building AutoUpdater tool..."
+            echo
+            outputPath="/tmp/autoupdater"
+            dotnet publish build/tools/AutoUpdater/AutoUpdater.csproj \
+            -c Release \
+            -r linux-x64 \
+            -o "$outputPath"
+            
+            echo
+            echo "Cloning forked Oryx repo..."
+            echo
+            export FORK_ACCOUNT_NAME="kiranongithub"
+            repoDir="/tmp/oryx"
+            rm -rf $repoDir
+            git clone https://github.com/$FORK_ACCOUNT_NAME/oryx.git $repoDir
+            cd $repoDir
+            git config --global user.email \"${FORK_ACCOUNT_NAME}@gmail.com\"
+            git config --global user.name \"$FORK_ACCOUNT_NAME\"
 
-          echo
-          echo "Keeping the forked Oryx repo up-to-date with upstream Oryx repo..."
-          echo
-          git remote add upstream https://github.com/microsoft/oryx.git
-          git fetch upstream
-          git reset --hard upstream/master
-          git push -uf origin master
+            echo
+            echo "Keeping the forked Oryx repo up-to-date with upstream Oryx repo..."
+            echo
+            git remote add upstream https://github.com/microsoft/oryx.git
+            git fetch upstream
+            git reset --hard upstream/master
+            git push -uf origin master
 
-          echo
-          echo "Getting buildpack-deps:stretch image's digest..."
-          buildpackDepsStretchSha=$(docker images --no-trunc --quiet buildpack-deps:stretch)
-          buildpackDepsStretchSha=${buildpackDepsStretchSha#"sha256:"}
+            echo
+            echo "Getting buildpack-deps:stretch image's digest..."
+            buildpackDepsStretchSha=$(docker images --no-trunc --quiet buildpack-deps:stretch)
+            buildpackDepsStretchSha=${buildpackDepsStretchSha#"sha256:"}
 
-          # For example: autoupdater/update.githubrunners.digest.458556-566
-          export BRANCH_ID_SUFFIX_FOR_PULL_REQUEST="${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}"
+            # For example: autoupdater/update.githubrunners.digest.458556-566
+            export BRANCH_ID_SUFFIX_FOR_PULL_REQUEST="${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}"
 
-          AutoUpdater digest "$repoDir" $buildpackDepsStretchSha
+            AutoUpdater digest "$repoDir" $buildpackDepsStretchSha
