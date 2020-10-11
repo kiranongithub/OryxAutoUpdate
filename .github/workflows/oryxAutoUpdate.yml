@@ -21,6 +21,8 @@ jobs:
         dotnet-version: '3.1.x'
 
     - name: Publish AutoUpdater tool and set environment variables
+      env:
+        AUTOUPDATE_PAT: ${{ secrets.AUTOUPDATE_PAT }}
       run: |
         set -ex
         echo "Building AutoUpdater tool..."
@@ -37,7 +39,7 @@ jobs:
         export FORK_ACCOUNT_NAME="kiranongithub"
         repoDir="/tmp/oryx"
         rm -rf $repoDir
-        git clone https://kiranongithub@github.com/$FORK_ACCOUNT_NAME/oryx.git $repoDir
+        git clone https://${FORK_ACCOUNT_NAME}:${AUTOUPDATE_PAT}@github.com/${FORK_ACCOUNT_NAME}/oryx.git $repoDir
         cd $repoDir
         git config --global user.email \"${FORK_ACCOUNT_NAME}@gmail.com\"
         git config --global user.name \"$FORK_ACCOUNT_NAME\"
