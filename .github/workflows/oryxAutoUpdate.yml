@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout microsoft/oryx repo
-      uses: actions/checkout@master
+      uses: actions/checkout@kichalla/update.autoupdater
       with:
         repository: microsoft/oryx
 
@@ -40,13 +40,13 @@ jobs:
           echo
           echo "Cloning forked Oryx repo..."
           echo
-          forkAccountName="kiranongithub"
+          export FORK_ACCOUNT_NAME="kiranongithub"
           repoDir="/tmp/oryx"
           rm -rf $repoDir
-          git clone https://github.com/$forkAccountName/oryx.git $repoDir
+          git clone https://github.com/$FORK_ACCOUNT_NAME/oryx.git $repoDir
           cd $repoDir
-          git config --global user.email \"${forkAccountName}@gmail.com\"
-          git config --global user.name \"$forkAccountName\"
+          git config --global user.email \"${FORK_ACCOUNT_NAME}@gmail.com\"
+          git config --global user.name \"$FORK_ACCOUNT_NAME\"
 
           echo
           echo "Keeping the forked Oryx repo up-to-date with upstream Oryx repo..."
@@ -61,5 +61,7 @@ jobs:
           buildpackDepsStretchSha=$(docker images --no-trunc --quiet buildpack-deps:stretch)
           buildpackDepsStretchSha=${buildpackDepsStretchSha#"sha256:"}
 
+          # For example: autoupdater/update.githubrunners.digest.458556-566
+          export BRANCH_ID_SUFFIX_FOR_PULL_REQUEST="${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}"
+
           AutoUpdater digest "$repoDir" $buildpackDepsStretchSha
-          
