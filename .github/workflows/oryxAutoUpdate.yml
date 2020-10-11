@@ -37,7 +37,7 @@ jobs:
         export FORK_ACCOUNT_NAME="kiranongithub"
         repoDir="/tmp/oryx"
         rm -rf $repoDir
-        git clone https://github.com/$FORK_ACCOUNT_NAME/oryx.git $repoDir
+        git clone https://kiranongithub@github.com/$FORK_ACCOUNT_NAME/oryx.git $repoDir
         cd $repoDir
         git config --global user.email \"${FORK_ACCOUNT_NAME}@gmail.com\"
         git config --global user.name \"$FORK_ACCOUNT_NAME\"
